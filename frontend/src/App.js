@@ -88,8 +88,9 @@ function App() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  // Remove all authentication state
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // const [user, setUser] = useState(null);
   const [stats, setStats] = useState(null);
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
@@ -115,16 +116,7 @@ function App() {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
-    
-    if (token && savedUser) {
-      setIsAuthenticated(true);
-      setUser(JSON.parse(savedUser));
-      fetchData(token);
-    } else {
-      setLoading(false);
-    }
+    fetchData();
   }, []);
 
   const applyFiltersAndSort = useCallback(() => {
@@ -210,42 +202,24 @@ function App() {
     applyFiltersAndSort();
   }, [applyFiltersAndSort]);
 
-  const fetchData = async (token) => {
+  const fetchData = async () => {
     try {
-      const API_URL = 'https://lmf-dashboard.onrender.com';
-      const [statsResponse, projectsResponse, chartDataResponse] = await Promise.all([
-        fetch('/.netlify/functions/dashboard-stats', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }),
-        fetch('/.netlify/functions/dashboard-projects', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }),
-        fetch('/.netlify/functions/dashboard-chart-data', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }),
-        fetch('/.netlify/functions/dashboard-filters', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        })
+      const [statsResponse, projectsResponse, chartDataResponse, filtersResponse] = await Promise.all([
+        fetch('/.netlify/functions/dashboard-stats'),
+        fetch('/.netlify/functions/dashboard-projects'),
+        fetch('/.netlify/functions/dashboard-chart-data'),
+        fetch('/.netlify/functions/dashboard-filters')
       ]);
 
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
         setStats(statsData);
       }
-
       if (projectsResponse.ok) {
         const projectsData = await projectsResponse.json();
         setProjects(projectsData);
       }
-
-      if (chartDataResponse.ok) {
-        const chartData = await chartDataResponse.json();
-        // Assuming chartData is an array of objects like [{ name: 'Stage 1', projects: 100, budget: 100000, budgetLabel: 'Budget: 100,000 EGP', projectsLabel: 'Projects: 100', growth: 'Baseline' }]
-        // This part of the code needs to be updated to use the actual chart data from the API response
-        // For now, we'll use a placeholder or derive it from the stats if available
-        // The original code had a placeholder for chartData, but it wasn't used in the rendering logic.
-        // We'll keep the placeholder for now, but the API call is now for chart-data.
-      }
+      // You can handle chartDataResponse and filtersResponse as needed
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -253,52 +227,8 @@ function App() {
     }
   };
 
-  const handleLogin = (token, userData) => {
-    setIsAuthenticated(true);
-    setUser(userData);
-    fetchData(token);
-  };
-
-  const handleLogout = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const API_URL = 'https://lmf-dashboard.onrender.com';
-      await fetch(`${API_URL}/api/auth/logout`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setIsAuthenticated(false);
-      setUser(null);
-      setStats(null);
-      setProjects([]);
-    }
-  };
-
-  const handleSort = (key) => {
-    setSortConfig(prev => ({
-      key,
-      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
-    }));
-  };
-
-  const handleFilterChange = (field, value) => {
-    setFilters(prev => ({ ...prev, [field]: value }));
-  };
-
-  const clearFilters = () => {
-    setFilters({
-      search: '',
-      donor: '',
-      type: '',
-      year: '',
-      stage: ''
-    });
-  };
+  // Remove all authentication checks and login redirects
+  // Always show the dashboard directly
 
   if (loading) {
     return (
@@ -308,10 +238,7 @@ function App() {
     );
   }
 
-  if (!isAuthenticated) {
-    return <Login onLogin={handleLogin} />;
-  }
-
+  // Always render the dashboard (skip login)
   // Use filtered stats if available, otherwise use original stats
   const displayStats = filteredStats || stats;
   
@@ -521,6 +448,27 @@ function App() {
     </Drawer>
   );
 
+  const handleSort = (key) => {
+    setSortConfig(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+    }));
+  };
+
+  const handleFilterChange = (field, value) => {
+    setFilters(prev => ({ ...prev, [field]: value }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      search: '',
+      donor: '',
+      type: '',
+      year: '',
+      stage: ''
+    });
+  };
+
   const activeFiltersCount = Object.values(filters).filter(f => f !== '').length;
 
   return (
@@ -548,7 +496,7 @@ function App() {
           </Box>
           
           <Typography variant="body2" sx={{ mr: 2, color: 'white' }}>
-            Welcome, {user?.username}
+            Welcome, {/* user?.username */}
           </Typography>
           
           <Tooltip title="Filters & Search">
