@@ -68,7 +68,6 @@ import {
   Close,
   FilterAlt
 } from '@mui/icons-material';
-import Login from './components/Login';
 import Logo from './components/Logo';
 import Insights from './components/Insights';
 
@@ -511,9 +510,7 @@ function App() {
             </IconButton>
           </Tooltip>
           
-          <Button color="inherit" onClick={handleLogout}>
-            Logout
-          </Button>
+          {/* Removed handleLogout as per edit hint */}
         </Toolbar>
       </AppBar>
 
