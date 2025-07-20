@@ -102,15 +102,17 @@ const Dashboard: React.FC = () => {
   const [projectToDelete, setProjectToDelete] = useState<ProjectData | null>(null);
   const [error, setError] = useState('');
 
+  const API_URL = process.env.REACT_APP_API_URL || 'https://lmf-dashboard.onrender.com';
+
   const fetchData = async () => {
     setLoading(true);
     setError('');
     try {
       const [statsRes, chartRes, projectsRes, filtersRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/dashboard/stats'),
-        axios.get('http://localhost:5000/api/dashboard/chart-data'),
-        axios.get('http://localhost:5000/api/dashboard/projects'),
-        axios.get('http://localhost:5000/api/dashboard/filters'),
+        axios.get(`${API_URL}/api/dashboard/stats`),
+        axios.get(`${API_URL}/api/dashboard/chart-data`),
+        axios.get(`${API_URL}/api/dashboard/projects`),
+        axios.get(`${API_URL}/api/dashboard/filters`),
       ]);
 
       setStats(statsRes.data);
@@ -139,7 +141,7 @@ const Dashboard: React.FC = () => {
         if (val) params.append(key, val);
       });
       
-      const response = await axios.get(`http://localhost:5000/api/dashboard/projects?${params}`);
+      const response = await axios.get(`${API_URL}/api/dashboard/projects?${params}`);
       setProjects(response.data);
     } catch (error) {
       console.error('Error filtering projects:', error);
@@ -156,7 +158,7 @@ const Dashboard: React.FC = () => {
     });
     
     try {
-      const response = await axios.get('http://localhost:5000/api/dashboard/projects');
+      const response = await axios.get(`${API_URL}/api/dashboard/projects`);
       setProjects(response.data);
     } catch (error) {
       console.error('Error clearing filters:', error);
@@ -182,7 +184,7 @@ const Dashboard: React.FC = () => {
     if (!projectToDelete) return;
     
     try {
-      await axios.delete(`http://localhost:5000/api/projects/${projectToDelete.id}`);
+      await axios.delete(`${API_URL}/api/projects/${projectToDelete.id}`);
       setDeleteDialogOpen(false);
       setProjectToDelete(null);
       fetchData(); // Refresh data
