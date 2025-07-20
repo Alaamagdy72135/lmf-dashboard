@@ -69,7 +69,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ open, onClose, project, onSuc
     setError('');
 
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'https://lmf-dashboard.onrender.com';
+      const API_URL = process.env.REACT_APP_API_URL || 'https://lmf-dashboard.onrender.com/api';
       if (project) {
         // Update existing project
         await axios.put(`${API_URL}/api/projects/${project.id}`, formData);
