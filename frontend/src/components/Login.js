@@ -36,7 +36,9 @@ const Login = ({ onLogin }) => {
     setError('');
 
     try {
-      const response = await fetch(`https://lmf-dashboard.onrender.com/api/auth/login`, {
+      const apiUrl = process.env.REACT_APP_API_URL || '';
+      // Use Netlify Function endpoint for login
+      const response = await fetch('/.netlify/functions/auth-login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

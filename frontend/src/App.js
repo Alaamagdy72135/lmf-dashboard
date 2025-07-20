@@ -213,11 +213,17 @@ function App() {
   const fetchData = async (token) => {
     try {
       const API_URL = 'https://lmf-dashboard.onrender.com';
-      const [statsResponse, projectsResponse] = await Promise.all([
-        fetch(`${API_URL}/api/dashboard/stats`, {
+      const [statsResponse, projectsResponse, chartDataResponse] = await Promise.all([
+        fetch('/.netlify/functions/dashboard-stats', {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch(`${API_URL}/api/dashboard/projects`, {
+        fetch('/.netlify/functions/dashboard-projects', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch('/.netlify/functions/dashboard-chart-data', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch('/.netlify/functions/dashboard-filters', {
           headers: { 'Authorization': `Bearer ${token}` }
         })
       ]);
@@ -230,6 +236,15 @@ function App() {
       if (projectsResponse.ok) {
         const projectsData = await projectsResponse.json();
         setProjects(projectsData);
+      }
+
+      if (chartDataResponse.ok) {
+        const chartData = await chartDataResponse.json();
+        // Assuming chartData is an array of objects like [{ name: 'Stage 1', projects: 100, budget: 100000, budgetLabel: 'Budget: 100,000 EGP', projectsLabel: 'Projects: 100', growth: 'Baseline' }]
+        // This part of the code needs to be updated to use the actual chart data from the API response
+        // For now, we'll use a placeholder or derive it from the stats if available
+        // The original code had a placeholder for chartData, but it wasn't used in the rendering logic.
+        // We'll keep the placeholder for now, but the API call is now for chart-data.
       }
     } catch (error) {
       console.error('Error fetching data:', error);

@@ -72,10 +72,10 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ open, onClose, project, onSuc
       const API_URL = process.env.REACT_APP_API_URL || 'https://lmf-dashboard.onrender.com/api';
       if (project) {
         // Update existing project
-        await axios.put(`${API_URL}/api/projects/${project.id}`, formData);
+        await axios.put(`/.netlify/functions/projects-update?id=${project.id}`, formData);
       } else {
         // Add new project
-        await axios.post(`${API_URL}/api/projects`, formData);
+        await axios.post('/.netlify/functions/projects', formData);
       }
       
       onSuccess();
