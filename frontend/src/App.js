@@ -212,7 +212,7 @@ function App() {
 
   const fetchData = async (token) => {
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'https://lmf-dashboard.onrender.com';
+      const API_URL = 'https://lmf-dashboard.onrender.com';
       const [statsResponse, projectsResponse] = await Promise.all([
         fetch(`${API_URL}/api/dashboard/stats`, {
           headers: { 'Authorization': `Bearer ${token}` }
@@ -247,7 +247,7 @@ function App() {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
-      const API_URL = process.env.REACT_APP_API_URL || 'https://lmf-dashboard.onrender.com';
+      const API_URL = 'https://lmf-dashboard.onrender.com';
       await fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
